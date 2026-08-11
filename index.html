@@ -284,8 +284,48 @@
   .meta-box strong, .loc-box strong{
     display:block; font-size:13px; font-weight:800; line-height:1.6;
   }
-  .loc-box{margin-bottom:16px;}
+  .loc-box{margin-bottom:12px;}
   .loc-box strong{font-size:14px;}
+
+  .countdown{
+    margin:0 0 16px;
+    border:1px solid rgba(184,146,74,.4);
+    border-radius:16px;
+    background:linear-gradient(180deg, rgba(255,253,248,.9), rgba(240,213,146,.18));
+    padding:14px 10px 12px;
+    text-align:center;
+  }
+  .countdown .label{
+    font-size:12px; font-weight:800; color:var(--gold-deep);
+    margin-bottom:10px;
+  }
+  .countdown-grid{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:6px;
+  }
+  .count-unit{
+    background:rgba(255,255,255,.75);
+    border:1px solid rgba(184,146,74,.28);
+    border-radius:12px;
+    padding:8px 4px 6px;
+  }
+  .count-unit .num{
+    display:block;
+    font-family:'Cairo', sans-serif;
+    font-size:22px; font-weight:800;
+    color:var(--forest);
+    line-height:1.1;
+    font-variant-numeric:tabular-nums;
+  }
+  .count-unit .txt{
+    display:block;
+    font-size:11px; font-weight:700;
+    color:var(--ink-soft);
+    margin-top:2px;
+  }
+  .countdown.done .num{color:var(--gold-deep);}
+  .countdown.done .label{color:var(--forest);}
 
   .closing{
     text-align:center; font-size:13px; color:var(--ink-soft);
@@ -497,6 +537,16 @@
       <strong>فندق حرس الحدود<br>قاعة برديس</strong>
     </div>
 
+    <div class="countdown reveal d6" id="countdown" aria-live="polite">
+      <div class="label">باقي على الموعد</div>
+      <div class="countdown-grid">
+        <div class="count-unit"><span class="num" id="cdDays">00</span><span class="txt">يوم</span></div>
+        <div class="count-unit"><span class="num" id="cdHours">00</span><span class="txt">ساعة</span></div>
+        <div class="count-unit"><span class="num" id="cdMins">00</span><span class="txt">دقيقة</span></div>
+        <div class="count-unit"><span class="num" id="cdSecs">00</span><span class="txt">ثانية</span></div>
+      </div>
+    </div>
+
     <p class="closing reveal d7">
       حضوركم يشرفنا ويسعدنا<br>
       ويكتمل بوجودكم فرحنا
@@ -538,6 +588,13 @@
   const rsvpNote = document.getElementById('rsvpNote');
   const confetti = document.getElementById('confetti');
   const audio = document.getElementById('audio');
+  const cdDays = document.getElementById('cdDays');
+  const cdHours = document.getElementById('cdHours');
+  const cdMins = document.getElementById('cdMins');
+  const cdSecs = document.getElementById('cdSecs');
+  const countdownEl = document.getElementById('countdown');
+  // Thursday 20 Aug 2026 — 3:00 PM Arabia (UTC+3)
+  const eventAt = new Date('2026-08-20T15:00:00+03:00').getTime();
 
   let toastTimer = null;
   let fleeCount = 0;
@@ -545,6 +602,31 @@
   let stopped = false;
   let opened = false;
   const funnyMsg = 'مافي شي اسمه عدم حضور، لازم تحضروا وتنورونا <span class="emoji">😂❤️</span>';
+
+  function pad(n){ return String(n).padStart(2, '0'); }
+
+  function tickCountdown(){
+    const diff = eventAt - Date.now();
+    if(diff <= 0){
+      cdDays.textContent = '00';
+      cdHours.textContent = '00';
+      cdMins.textContent = '00';
+      cdSecs.textContent = '00';
+      countdownEl.classList.add('done');
+      countdownEl.querySelector('.label').textContent = 'اليوم الموعد… بارك الله لهما ❤️';
+      return;
+    }
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins = Math.floor((diff % 3600000) / 60000);
+    const secs = Math.floor((diff % 60000) / 1000);
+    cdDays.textContent = pad(days);
+    cdHours.textContent = pad(hours);
+    cdMins.textContent = pad(mins);
+    cdSecs.textContent = pad(secs);
+  }
+  tickCountdown();
+  setInterval(tickCountdown, 1000);
 
   function openInviteNow(){
     if(opened) return;
