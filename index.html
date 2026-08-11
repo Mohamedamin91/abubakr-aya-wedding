@@ -50,21 +50,88 @@
     100%{transform:translate3d(40px,110vh,0) rotate(360deg); opacity:0;}
   }
 
-  /* invite open immediately — no WhatsApp dependency on open button */
-  .intro{display:none!important;}
-  .open-gate{display:none!important;}
+  /* envelope cover — open first */
+  .open-gate{
+    position:absolute;
+    width:1px; height:1px;
+    padding:0; margin:-1px;
+    overflow:hidden; clip:rect(0,0,0,0);
+    white-space:nowrap; border:0;
+  }
+  .intro{
+    position:fixed; inset:0; z-index:100;
+    display:grid; place-items:center;
+    background:linear-gradient(160deg, var(--forest-deep), var(--forest) 55%, #2d6b50);
+    transition:opacity .7s ease, visibility .7s ease;
+  }
+  .intro.hide,
+  .open-gate:checked ~ .intro{
+    opacity:0; visibility:hidden; pointer-events:none;
+  }
+  .envelope{
+    width:min(88vw,340px);
+    text-align:center; color:#f8f4ea;
+    animation:floatSoft 3.2s ease-in-out infinite;
+  }
+  @keyframes floatSoft{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-10px);}
+  }
+  .envelope .seal{
+    width:78px; height:78px; margin:0 auto 22px;
+    border-radius:50%;
+    border:2px solid rgba(232,204,140,.8);
+    display:grid; place-items:center;
+    background:radial-gradient(circle at 35% 30%, #f0d592, #b8924a 60%, #8f6d2f);
+    box-shadow:0 10px 30px rgba(0,0,0,.25);
+    font-size:30px;
+  }
+  .envelope h1{
+    font-family:'Aref Ruqaa', serif;
+    font-size:34px; font-weight:700; margin-bottom:8px;
+  }
+  .envelope p{font-size:15px; opacity:.9; margin-bottom:28px;}
+  .open-btn{
+    appearance:none; border:0; cursor:pointer;
+    display:inline-block;
+    background:linear-gradient(135deg, #f0d592, #c9a05a);
+    color:var(--forest-deep);
+    font-family:'Cairo', sans-serif;
+    font-weight:800; font-size:16px;
+    padding:14px 34px; border-radius:999px;
+    box-shadow:0 12px 28px rgba(0,0,0,.22);
+    transition:transform .2s ease, box-shadow .2s ease;
+    -webkit-tap-highlight-color:transparent;
+    user-select:none;
+  }
+  .open-btn:active{transform:scale(.97);}
 
   /* invite shell */
   .page{
     width:min(100%, 460px);
     margin:0 auto;
     padding:18px 14px 28px;
+    opacity:0; transform:translateY(28px);
+    transition:opacity .9s ease, transform .9s ease;
+  }
+  .page.show,
+  .open-gate:checked ~ .page{
     opacity:1; transform:none;
   }
-  .page.show{opacity:1; transform:none;}
 
-  .reveal{opacity:1; transform:none;}
-  .page.show .reveal{opacity:1; transform:none;}
+  .reveal{opacity:0; transform:translateY(18px); transition:opacity .7s ease, transform .7s ease;}
+  .page.show .reveal,
+  .open-gate:checked ~ .page .reveal{
+    opacity:1; transform:none;
+  }
+  .page.show .d1, .open-gate:checked ~ .page .d1{transition-delay:.15s;}
+  .page.show .d2, .open-gate:checked ~ .page .d2{transition-delay:.3s;}
+  .page.show .d3, .open-gate:checked ~ .page .d3{transition-delay:.45s;}
+  .page.show .d4, .open-gate:checked ~ .page .d4{transition-delay:.6s;}
+  .page.show .d5, .open-gate:checked ~ .page .d5{transition-delay:.75s;}
+  .page.show .d6, .open-gate:checked ~ .page .d6{transition-delay:.9s;}
+  .page.show .d7, .open-gate:checked ~ .page .d7{transition-delay:1.05s;}
+  .page.show .d8, .open-gate:checked ~ .page .d8{transition-delay:1.2s;}
 
   .card{
     position:relative;
@@ -353,6 +420,17 @@
 <div class="petal" style="left:70%; animation-duration:10s; animation-delay:1.8s;"></div>
 <div class="petal" style="left:84%; animation-duration:13s; animation-delay:3s;"></div>
 
+<input type="checkbox" id="openGate" class="open-gate" autocomplete="off">
+
+<div class="intro" id="intro">
+  <div class="envelope">
+    <div class="seal">♥</div>
+    <h1>أبوبكر &amp; آية</h1>
+    <p>بطاقة دعوة خاصة لعقد القران</p>
+    <label class="open-btn" id="openInvite" for="openGate">افتح الدعوة ✉️</label>
+  </div>
+</div>
+
 <main class="page" id="page">
   <article class="card">
     <div class="side-florals left" aria-hidden="true"></div>
@@ -449,6 +527,10 @@
 
 <script>
 (function(){
+  const intro = document.getElementById('intro');
+  const page = document.getElementById('page');
+  const openGate = document.getElementById('openGate');
+  const openInvite = document.getElementById('openInvite');
   const btnYes = document.getElementById('btnYes');
   const btnNo = document.getElementById('btnNo');
   const btnRow = document.getElementById('btnRow');
@@ -461,7 +543,27 @@
   let fleeCount = 0;
   let wanderTimer = null;
   let stopped = false;
+  let opened = false;
   const funnyMsg = 'مافي شي اسمه عدم حضور، لازم تحضروا وتنورونا <span class="emoji">😂❤️</span>';
+
+  function openInviteNow(){
+    if(opened) return;
+    opened = true;
+    if(openGate && !openGate.checked) openGate.checked = true;
+    intro.classList.add('hide');
+    page.classList.add('show');
+    startWander();
+    if(audio){
+      audio.play().catch(() => {});
+    }
+  }
+
+  if(openGate){
+    openGate.addEventListener('change', () => {
+      if(openGate.checked) openInviteNow();
+    });
+  }
+  openInvite?.addEventListener('click', () => setTimeout(openInviteNow, 0));
 
   function showToast(){
     toast.classList.add('show');
@@ -548,13 +650,6 @@
       toast.innerHTML = funnyMsg;
     }, 2800);
   });
-
-  // start interactive bits immediately
-  startWander();
-  // try soft autoplay; if blocked, native controls still work
-  if(audio){
-    audio.play().catch(() => {});
-  }
 })();
 </script>
 </body>
