@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#1f4d3a">
+<title>دعوة عقد قران — أبوبكر &amp; آية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@500;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#f7f1e6;
+    --cream-2:#efe4d2;
+    --ink:#3a2a1f;
+    --ink-soft:#6b5344;
+    --gold:#b8924a;
+    --gold-deep:#8f6d2f;
+    --forest:#1f4d3a;
+    --forest-deep:#163828;
+    --white:#fffdf8;
+    --shadow:0 18px 50px rgba(31,77,58,.14);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{min-height:100%;}
+  body{
+    font-family:'Cairo', sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(900px 500px at 50% -10%, #fff9ef, transparent 60%),
+      linear-gradient(180deg, #f3ebe0 0%, var(--cream) 40%, #e9ded0 100%);
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  .calligraphy{font-family:'Aref Ruqaa', 'Amiri', serif;}
+  .verse{font-family:'Amiri', serif;}
+
+  /* floating petals */
+  .petal{
+    position:fixed; z-index:2; pointer-events:none;
+    width:14px; height:14px; border-radius:70% 10% 70% 10%;
+    background:rgba(184,146,74,.35);
+    animation:fall linear infinite;
+    opacity:.55;
+  }
+  .petal:nth-child(odd){background:rgba(31,77,58,.22); border-radius:50% 10% 50% 10%;}
+  @keyframes fall{
+    0%{transform:translate3d(0,-10vh,0) rotate(0deg); opacity:0;}
+    10%{opacity:.6;}
+    100%{transform:translate3d(40px,110vh,0) rotate(360deg); opacity:0;}
+  }
+
+  /* invite open immediately — no WhatsApp dependency on open button */
+  .intro{display:none!important;}
+  .open-gate{display:none!important;}
+
+  /* invite shell */
+  .page{
+    width:min(100%, 460px);
+    margin:0 auto;
+    padding:18px 14px 28px;
+    opacity:1; transform:none;
+  }
+  .page.show{opacity:1; transform:none;}
+
+  .reveal{opacity:1; transform:none;}
+  .page.show .reveal{opacity:1; transform:none;}
+
+  .card{
+    position:relative;
+    background:
+      linear-gradient(180deg, rgba(255,253,248,.96), rgba(247,241,230,.98));
+    border:1px solid rgba(184,146,74,.35);
+    border-radius:28px;
+    box-shadow:var(--shadow);
+    padding:34px 22px 28px;
+    overflow:hidden;
+  }
+  .card::before{
+    content:"";
+    position:absolute; inset:10px;
+    border:1px solid rgba(184,146,74,.28);
+    border-radius:20px;
+    pointer-events:none;
+  }
+  .side-florals{
+    position:absolute; top:90px; width:72px; height:220px;
+    opacity:.75; pointer-events:none;
+    background:
+      radial-gradient(circle at 30% 20%, rgba(255,255,255,.95) 0 8px, transparent 9px),
+      radial-gradient(circle at 60% 45%, rgba(255,255,255,.9) 0 7px, transparent 8px),
+      radial-gradient(circle at 35% 70%, rgba(255,255,255,.85) 0 9px, transparent 10px),
+      radial-gradient(circle at 55% 90%, rgba(184,146,74,.35) 0 5px, transparent 6px);
+  }
+  .side-florals.left{left:-6px; transform:scaleX(-1);}
+  .side-florals.right{right:-6px;}
+
+  .bismillah{
+    text-align:center;
+    font-family:'Aref Ruqaa', serif;
+    font-size:28px; color:var(--ink);
+    margin-bottom:14px;
+  }
+  .ayah{
+    text-align:center;
+    font-size:15px; line-height:2;
+    color:var(--ink-soft);
+    margin:0 auto 18px;
+    max-width:34ch;
+    position:relative;
+  }
+  .ayah::before,.ayah::after{
+    content:"✦"; color:var(--gold); font-size:11px;
+    display:inline-block; margin-inline:8px; vertical-align:middle;
+  }
+  .lead{
+    text-align:center; font-size:15px; color:var(--ink-soft);
+    margin-bottom:16px;
+  }
+
+  .families{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    gap:10px; align-items:center;
+    border:1px solid rgba(184,146,74,.4);
+    border-radius:16px;
+    padding:14px 10px;
+    background:rgba(255,255,255,.45);
+    margin-bottom:18px;
+  }
+  .fam{
+    text-align:center; font-size:13px; font-weight:700; line-height:1.7;
+  }
+  .fam .and{display:block; color:var(--gold-deep); margin:4px 0; font-weight:800;}
+  .fam-join{
+    width:30px; height:30px; border-radius:50%;
+    border:1px solid var(--gold);
+    display:grid; place-items:center;
+    color:var(--gold-deep); font-weight:800; background:#fff;
+    box-shadow:0 4px 10px rgba(184,146,74,.2);
+  }
+
+  .invite-line{
+    text-align:center; color:var(--ink-soft); font-size:14px; margin-bottom:10px;
+  }
+  .badge{
+    width:fit-content; margin:0 auto 18px;
+    border:1.5px solid var(--gold);
+    border-radius:14px;
+    padding:8px 28px;
+    background:linear-gradient(180deg, #fff, #f8efdd);
+    box-shadow:0 8px 18px rgba(184,146,74,.15);
+    animation:pulseGold 2.8s ease-in-out infinite;
+  }
+  @keyframes pulseGold{
+    0%,100%{box-shadow:0 8px 18px rgba(184,146,74,.15);}
+    50%{box-shadow:0 10px 28px rgba(184,146,74,.32);}
+  }
+  .badge span{
+    font-family:'Aref Ruqaa', serif;
+    font-size:28px; color:var(--ink); font-weight:700;
+  }
+
+  .couple{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    gap:8px; align-items:center;
+    margin-bottom:20px;
+  }
+  .person{text-align:center;}
+  .person .name{
+    font-family:'Aref Ruqaa', serif;
+    font-size:clamp(36px, 10vw, 46px);
+    color:var(--ink);
+    line-height:1.1;
+    animation:nameGlow 3.5s ease-in-out infinite;
+  }
+  @keyframes nameGlow{
+    0%,100%{text-shadow:0 0 0 transparent;}
+    50%{text-shadow:0 6px 18px rgba(184,146,74,.28);}
+  }
+  .person .lineage{
+    margin-top:8px; font-size:11.5px; line-height:1.65;
+    color:var(--ink-soft); font-weight:600;
+  }
+  .heart{
+    width:42px; height:42px; border-radius:50%;
+    display:grid; place-items:center;
+    background:radial-gradient(circle at 35% 30%, #f5dfaa, #c9a05a);
+    color:#fff; font-size:18px;
+    box-shadow:0 8px 18px rgba(184,146,74,.35);
+    animation:heartbeat 1.4s ease-in-out infinite;
+  }
+  @keyframes heartbeat{
+    0%,100%{transform:scale(1);}
+    35%{transform:scale(1.12);}
+    55%{transform:scale(.96);}
+  }
+
+  .will{
+    text-align:center; font-size:13px; color:var(--ink-soft);
+    margin-bottom:12px;
+  }
+
+  .meta{
+    display:grid; grid-template-columns:1fr 1fr; gap:10px;
+    margin-bottom:10px;
+  }
+  .meta-box, .loc-box{
+    border:1px solid rgba(184,146,74,.35);
+    border-radius:14px;
+    background:rgba(255,255,255,.55);
+    padding:12px 10px;
+    text-align:center;
+  }
+  .meta-box .icon, .loc-box .icon{font-size:18px; margin-bottom:6px;}
+  .meta-box strong, .loc-box strong{
+    display:block; font-size:13px; font-weight:800; line-height:1.6;
+  }
+  .loc-box{margin-bottom:16px;}
+  .loc-box strong{font-size:14px;}
+
+  .closing{
+    text-align:center; font-size:13px; color:var(--ink-soft);
+    line-height:1.9; margin-bottom:10px;
+  }
+  .dua{
+    text-align:center;
+    font-family:'Amiri', serif;
+    font-size:15px; line-height:1.9;
+    color:var(--forest);
+    font-weight:700;
+  }
+
+  /* audio */
+  .audio-bar{
+    margin-top:20px;
+    border-radius:16px;
+    background:linear-gradient(135deg, rgba(31,77,58,.08), rgba(184,146,74,.12));
+    border:1px solid rgba(184,146,74,.3);
+    padding:12px 14px;
+  }
+  .audio-bar audio{
+    width:100%;
+    height:40px;
+    display:block;
+  }
+
+  /* actions inside card — not covering content */
+  .actions{
+    margin-top:18px;
+    display:grid;
+    gap:8px;
+  }
+  .btn-row{
+    position:relative;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    min-height:110px;
+    overflow:visible;
+  }
+  .btn{
+    appearance:none; border:0; cursor:pointer;
+    font-family:'Cairo', sans-serif; font-weight:700; font-size:12.5px;
+    border-radius:12px; padding:10px 10px;
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    transition:transform .15s ease, box-shadow .15s ease, background .2s ease;
+    text-decoration:none;
+  }
+  .btn-maps{
+    background:linear-gradient(135deg, #f0d592, #c9a05a);
+    color:var(--forest-deep);
+    box-shadow:0 4px 12px rgba(184,146,74,.22);
+  }
+  .btn-yes{
+    position:absolute;
+    right:0;
+    bottom:0;
+    width:calc(50% - 4px);
+    z-index:30;
+    background:linear-gradient(135deg, #2f7a58, #1f4d3a);
+    color:#fff;
+    box-shadow:0 4px 12px rgba(31,77,58,.2);
+    border:1px solid rgba(240,213,146,.28);
+  }
+  .btn-no{
+    position:absolute;
+    left:0;
+    top:0;
+    width:calc(48% - 4px);
+    z-index:5;
+    background:rgba(58,42,31,.06);
+    color:var(--ink-soft);
+    border:1px solid rgba(58,42,31,.12);
+    transition:left .45s cubic-bezier(.2,.8,.2,1), top .45s cubic-bezier(.2,.8,.2,1), transform .45s ease;
+    will-change:left, top, transform;
+  }
+  .btn:active{transform:scale(.97);}
+  .rsvp-note{
+    text-align:center; color:var(--forest); font-size:12px; min-height:16px; font-weight:700;
+  }
+
+  /* toast — centered, prominent, never blocks taps */
+  .toast{
+    position:fixed;
+    left:50%;
+    top:50%;
+    bottom:auto;
+    z-index:120;
+    transform:translate(-50%, -46%) scale(.92);
+    width:min(88vw, 340px);
+    background:rgba(255,253,248,.97);
+    color:var(--ink);
+    border:1.5px solid rgba(184,146,74,.55);
+    border-radius:20px;
+    padding:20px 18px;
+    text-align:center;
+    font-weight:800; font-size:16px; line-height:1.9;
+    box-shadow:
+      0 0 0 100vmax rgba(22,56,40,.35),
+      0 22px 50px rgba(0,0,0,.28);
+    opacity:0; visibility:hidden;
+    pointer-events:none;
+    transition:opacity .28s ease, transform .28s ease, visibility .28s ease;
+  }
+  .toast.show{
+    opacity:1; visibility:visible;
+    transform:translate(-50%, -50%) scale(1);
+  }
+  .toast .emoji{display:inline; font-size:22px; margin-inline-start:4px;}
+
+  .confetti{
+    position:fixed; inset:0; pointer-events:none; z-index:70; overflow:hidden;
+  }
+  .confetti i{
+    position:absolute; top:-10px; width:8px; height:12px; border-radius:2px;
+    animation:confettiFall 1.8s ease-in forwards;
+  }
+  @keyframes confettiFall{
+    0%{transform:translateY(0) rotate(0); opacity:1;}
+    100%{transform:translateY(100vh) rotate(720deg); opacity:0;}
+  }
+</style>
+</head>
+<body>
+
+<!-- petals -->
+<div class="petal" style="left:8%; animation-duration:9s; animation-delay:0s;"></div>
+<div class="petal" style="left:22%; animation-duration:11s; animation-delay:1s;"></div>
+<div class="petal" style="left:38%; animation-duration:8s; animation-delay:2.2s;"></div>
+<div class="petal" style="left:55%; animation-duration:12s; animation-delay:.6s;"></div>
+<div class="petal" style="left:70%; animation-duration:10s; animation-delay:1.8s;"></div>
+<div class="petal" style="left:84%; animation-duration:13s; animation-delay:3s;"></div>
+
+<main class="page" id="page">
+  <article class="card">
+    <div class="side-florals left" aria-hidden="true"></div>
+    <div class="side-florals right" aria-hidden="true"></div>
+
+    <h1 class="bismillah calligraphy reveal d1">بسم الله الرحمن الرحيم</h1>
+
+    <p class="ayah verse reveal d1">
+      ومن آياته أن خلق لكم من أنفسكم أزواجًا لتسكنوا إليها وجعل بينكم مودة ورحمة
+    </p>
+
+    <p class="lead reveal d2">بكل الفرح والسرور يتشرف</p>
+
+    <div class="families reveal d2">
+      <div class="fam">
+        آل عوض الكريم عبدالله إبراهيم
+        <span class="and">و</span>
+        آل العبيد العوض محمد صالح
+      </div>
+      <div class="fam-join">و</div>
+      <div class="fam">
+        آل ميرغني محمد الخليفة البدوي
+        <span class="and">و</span>
+        آل الطيب جعفر مصطفى
+      </div>
+    </div>
+
+    <p class="invite-line reveal d3">بدعوتكم لمشاركتهم فرحة</p>
+    <div class="badge reveal d3"><span>عقد قران</span></div>
+
+    <div class="couple reveal d4">
+      <div class="person">
+        <div class="name">أبوبكر</div>
+        <div class="lineage">
+          آل عوض الكريم عبدالله إبراهيم
+          <br>وآل العبيد العوض محمد صالح
+        </div>
+      </div>
+      <div class="heart" aria-hidden="true">♥</div>
+      <div class="person">
+        <div class="name">آية</div>
+        <div class="lineage">
+          آل ميرغني محمد الخليفة البدوي
+          <br>وآل الطيب جعفر مصطفى
+        </div>
+      </div>
+    </div>
+
+    <p class="will reveal d5">وذلك بمشيئة الله تعالى</p>
+
+    <div class="meta reveal d5">
+      <div class="meta-box">
+        <div class="icon">📅</div>
+        <strong>يوم الخميس<br>20 أغسطس 2026</strong>
+      </div>
+      <div class="meta-box">
+        <div class="icon">🕒</div>
+        <strong>الساعة الثالثة<br>عصراً</strong>
+      </div>
+    </div>
+
+    <div class="loc-box reveal d6">
+      <div class="icon">📍</div>
+      <strong>فندق حرس الحدود<br>قاعة برديس</strong>
+    </div>
+
+    <p class="closing reveal d7">
+      حضوركم يشرفنا ويسعدنا<br>
+      ويكتمل بوجودكم فرحنا
+    </p>
+    <p class="dua reveal d7">بارك الله لهما وبارك عليهما وجمع بينهما في خير</p>
+
+    <div class="audio-bar reveal d8" id="audioBar">
+      <audio id="audio" src="audio.mp4" controls playsinline preload="auto" controlslist="nodownload"></audio>
+    </div>
+
+    <div class="actions reveal d8" id="actions">
+      <a class="btn btn-maps" href="https://maps.app.goo.gl/quk6iis1wCzNtmmx8?g_st=awb" target="_blank" rel="noopener">
+        📍 الموقع
+      </a>
+      <div class="btn-row" id="btnRow">
+        <button class="btn btn-yes" id="btnYes" type="button">✅ أكيد بحضر</button>
+        <button class="btn btn-no" id="btnNo" type="button">عدم حضور</button>
+      </div>
+      <div class="rsvp-note" id="rsvpNote"></div>
+    </div>
+  </article>
+</main>
+
+<div class="toast" id="toast">
+  مافي شي اسمه عدم حضور، لازم تحضروا وتنورونا <span class="emoji">😂❤️</span>
+</div>
+<div class="confetti" id="confetti" aria-hidden="true"></div>
+
+<script>
+(function(){
+  const btnYes = document.getElementById('btnYes');
+  const btnNo = document.getElementById('btnNo');
+  const btnRow = document.getElementById('btnRow');
+  const toast = document.getElementById('toast');
+  const rsvpNote = document.getElementById('rsvpNote');
+  const confetti = document.getElementById('confetti');
+  const audio = document.getElementById('audio');
+
+  let toastTimer = null;
+  let fleeCount = 0;
+  let wanderTimer = null;
+  let stopped = false;
+  const funnyMsg = 'مافي شي اسمه عدم حضور، لازم تحضروا وتنورونا <span class="emoji">😂❤️</span>';
+
+  function showToast(){
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
+  }
+
+  function moveNoButton(fast){
+    if(stopped) return;
+    const rowW = btnRow.clientWidth;
+    const rowH = btnRow.clientHeight || 110;
+    const btnW = btnNo.offsetWidth || rowW * 0.45;
+    const btnH = btnNo.offsetHeight || 42;
+    const maxLeft = Math.max(0, (rowW * 0.48) - btnW);
+    const maxTop = Math.max(0, rowH - btnH - 4);
+    const left = Math.random() * maxLeft;
+    const top = Math.random() * maxTop;
+    const tilt = (Math.random() * 16) - 8;
+    const duration = fast ? '.18s' : '.55s';
+    btnNo.style.transition = `left ${duration} cubic-bezier(.2,.8,.2,1), top ${duration} cubic-bezier(.2,.8,.2,1), transform ${duration} ease`;
+    btnNo.style.left = left + 'px';
+    btnNo.style.top = top + 'px';
+    btnNo.style.transform = `rotate(${tilt}deg)`;
+  }
+
+  function startWander(){
+    if(wanderTimer) return;
+    moveNoButton(false);
+    wanderTimer = setInterval(() => moveNoButton(false), 900);
+  }
+
+  function stopWander(){
+    stopped = true;
+    if(wanderTimer){
+      clearInterval(wanderTimer);
+      wanderTimer = null;
+    }
+  }
+
+  function flee(e){
+    e.preventDefault();
+    e.stopPropagation();
+    if(stopped) return;
+    fleeCount++;
+    moveNoButton(true);
+    toast.innerHTML = funnyMsg;
+    showToast();
+    if(navigator.vibrate) navigator.vibrate(18);
+    if(fleeCount >= 3){
+      btnNo.textContent = 'مستحيل ❤️';
+    }
+  }
+
+  ['pointerenter','pointerdown','click','touchstart'].forEach(evt => {
+    btnNo.addEventListener(evt, flee, {passive:false});
+  });
+
+  function burstConfetti(){
+    const colors = ['#b8924a','#1f4d3a','#f0d592','#2d6b50','#e11d48'];
+    for(let i=0;i<40;i++){
+      const el = document.createElement('i');
+      el.style.left = Math.random()*100 + 'vw';
+      el.style.background = colors[i % colors.length];
+      el.style.animationDelay = (Math.random()*0.4) + 's';
+      el.style.transform = `rotate(${Math.random()*180}deg)`;
+      confetti.appendChild(el);
+      setTimeout(() => el.remove(), 2200);
+    }
+  }
+
+  btnYes.addEventListener('click', () => {
+    stopWander();
+    rsvpNote.textContent = 'يا سلام بنستناكم تنورونا ❤️';
+    btnYes.textContent = 'حضور مؤكد ❤️';
+    btnYes.disabled = true;
+    btnNo.style.opacity = '.35';
+    btnNo.style.pointerEvents = 'none';
+    burstConfetti();
+    toast.innerHTML = 'يا سلام بنستناكم تنورونا <span class="emoji">❤️</span>';
+    showToast();
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toast.classList.remove('show');
+      toast.innerHTML = funnyMsg;
+    }, 2800);
+  });
+
+  // start interactive bits immediately
+  startWander();
+  // try soft autoplay; if blocked, native controls still work
+  if(audio){
+    audio.play().catch(() => {});
+  }
+})();
+</script>
+</body>
+</html>
