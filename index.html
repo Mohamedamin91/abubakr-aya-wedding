@@ -289,14 +289,19 @@
 
   .countdown{
     margin:0 0 16px;
-    border:1px solid rgba(184,146,74,.4);
+    border:2px solid rgba(184,146,74,.55);
     border-radius:16px;
-    background:linear-gradient(180deg, rgba(255,253,248,.9), rgba(240,213,146,.18));
+    background:linear-gradient(180deg, #fffdf8, #f3e2bd);
     padding:14px 10px 12px;
     text-align:center;
+    box-shadow:0 10px 24px rgba(31,77,58,.12);
+    position:relative;
+    z-index:2;
+    opacity:1 !important;
+    transform:none !important;
   }
   .countdown .label{
-    font-size:12px; font-weight:800; color:var(--gold-deep);
+    font-size:13px; font-weight:800; color:var(--forest);
     margin-bottom:10px;
   }
   .countdown-grid{
@@ -305,15 +310,15 @@
     gap:6px;
   }
   .count-unit{
-    background:rgba(255,255,255,.75);
-    border:1px solid rgba(184,146,74,.28);
+    background:#fff;
+    border:1px solid rgba(184,146,74,.35);
     border-radius:12px;
-    padding:8px 4px 6px;
+    padding:10px 4px 8px;
   }
   .count-unit .num{
     display:block;
     font-family:'Cairo', sans-serif;
-    font-size:22px; font-weight:800;
+    font-size:24px; font-weight:800;
     color:var(--forest);
     line-height:1.1;
     font-variant-numeric:tabular-nums;
@@ -326,6 +331,21 @@
   }
   .countdown.done .num{color:var(--gold-deep);}
   .countdown.done .label{color:var(--forest);}
+
+  .countdown.cover{
+    margin:22px auto 0;
+    width:min(100%, 320px);
+    background:rgba(255,253,248,.14);
+    border-color:rgba(240,213,146,.55);
+    box-shadow:none;
+  }
+  .countdown.cover .label{color:#f0d592;}
+  .countdown.cover .count-unit{
+    background:rgba(255,253,248,.12);
+    border-color:rgba(240,213,146,.35);
+  }
+  .countdown.cover .num{color:#fffdf8; font-size:20px;}
+  .countdown.cover .txt{color:rgba(248,244,234,.8);}
 
   .closing{
     text-align:center; font-size:13px; color:var(--ink-soft);
@@ -468,6 +488,16 @@
     <h1>أبوبكر &amp; آية</h1>
     <p>بطاقة دعوة خاصة لعقد القران</p>
     <label class="open-btn" id="openInvite" for="openGate">افتح الدعوة ✉️</label>
+
+    <div class="countdown cover" id="countdownCover" aria-live="polite">
+      <div class="label">باقي على الموعد</div>
+      <div class="countdown-grid">
+        <div class="count-unit"><span class="num" data-cd="days">--</span><span class="txt">يوم</span></div>
+        <div class="count-unit"><span class="num" data-cd="hours">--</span><span class="txt">ساعة</span></div>
+        <div class="count-unit"><span class="num" data-cd="mins">--</span><span class="txt">دقيقة</span></div>
+        <div class="count-unit"><span class="num" data-cd="secs">--</span><span class="txt">ثانية</span></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -532,19 +562,19 @@
       </div>
     </div>
 
+    <div class="countdown" id="countdown" aria-live="polite">
+      <div class="label">باقي على الموعد</div>
+      <div class="countdown-grid">
+        <div class="count-unit"><span class="num" data-cd="days">--</span><span class="txt">يوم</span></div>
+        <div class="count-unit"><span class="num" data-cd="hours">--</span><span class="txt">ساعة</span></div>
+        <div class="count-unit"><span class="num" data-cd="mins">--</span><span class="txt">دقيقة</span></div>
+        <div class="count-unit"><span class="num" data-cd="secs">--</span><span class="txt">ثانية</span></div>
+      </div>
+    </div>
+
     <div class="loc-box reveal d6">
       <div class="icon">📍</div>
       <strong>فندق حرس الحدود<br>قاعة برديس</strong>
-    </div>
-
-    <div class="countdown reveal d6" id="countdown" aria-live="polite">
-      <div class="label">باقي على الموعد</div>
-      <div class="countdown-grid">
-        <div class="count-unit"><span class="num" id="cdDays">00</span><span class="txt">يوم</span></div>
-        <div class="count-unit"><span class="num" id="cdHours">00</span><span class="txt">ساعة</span></div>
-        <div class="count-unit"><span class="num" id="cdMins">00</span><span class="txt">دقيقة</span></div>
-        <div class="count-unit"><span class="num" id="cdSecs">00</span><span class="txt">ثانية</span></div>
-      </div>
     </div>
 
     <p class="closing reveal d7">
@@ -588,13 +618,12 @@
   const rsvpNote = document.getElementById('rsvpNote');
   const confetti = document.getElementById('confetti');
   const audio = document.getElementById('audio');
-  const cdDays = document.getElementById('cdDays');
-  const cdHours = document.getElementById('cdHours');
-  const cdMins = document.getElementById('cdMins');
-  const cdSecs = document.getElementById('cdSecs');
-  const countdownEl = document.getElementById('countdown');
-  // Thursday 20 Aug 2026 — 3:00 PM Arabia (UTC+3)
-  const eventAt = new Date('2026-08-20T15:00:00+03:00').getTime();
+  const countdownBoxes = [
+    document.getElementById('countdownCover'),
+    document.getElementById('countdown')
+  ].filter(Boolean);
+  // Thursday 20 Aug 2026 — 3:00 PM Arabia (UTC+3) = 12:00 UTC
+  const eventAt = Date.UTC(2026, 7, 20, 12, 0, 0);
 
   let toastTimer = null;
   let fleeCount = 0;
@@ -603,27 +632,28 @@
   let opened = false;
   const funnyMsg = 'مافي شي اسمه عدم حضور، لازم تحضروا وتنورونا <span class="emoji">😂❤️</span>';
 
-  function pad(n){ return String(n).padStart(2, '0'); }
+  function pad(n){ return String(Math.max(0, n|0)).padStart(2, '0'); }
 
   function tickCountdown(){
     const diff = eventAt - Date.now();
-    if(diff <= 0){
-      cdDays.textContent = '00';
-      cdHours.textContent = '00';
-      cdMins.textContent = '00';
-      cdSecs.textContent = '00';
-      countdownEl.classList.add('done');
-      countdownEl.querySelector('.label').textContent = 'اليوم الموعد… بارك الله لهما ❤️';
-      return;
-    }
-    const days = Math.floor(diff / 86400000);
-    const hours = Math.floor((diff % 86400000) / 3600000);
-    const mins = Math.floor((diff % 3600000) / 60000);
-    const secs = Math.floor((diff % 60000) / 1000);
-    cdDays.textContent = pad(days);
-    cdHours.textContent = pad(hours);
-    cdMins.textContent = pad(mins);
-    cdSecs.textContent = pad(secs);
+    const done = !isFinite(diff) || diff <= 0;
+    const days = done ? 0 : Math.floor(diff / 86400000);
+    const hours = done ? 0 : Math.floor((diff % 86400000) / 3600000);
+    const mins = done ? 0 : Math.floor((diff % 3600000) / 60000);
+    const secs = done ? 0 : Math.floor((diff % 60000) / 1000);
+    const values = { days: pad(days), hours: pad(hours), mins: pad(mins), secs: pad(secs) };
+
+    countdownBoxes.forEach(box => {
+      box.querySelectorAll('[data-cd]').forEach(el => {
+        const key = el.getAttribute('data-cd');
+        if(values[key] != null) el.textContent = values[key];
+      });
+      if(done){
+        box.classList.add('done');
+        const label = box.querySelector('.label');
+        if(label) label.textContent = 'اليوم الموعد… بارك الله لهما ❤️';
+      }
+    });
   }
   tickCountdown();
   setInterval(tickCountdown, 1000);
